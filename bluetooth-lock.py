@@ -7,8 +7,7 @@ from optparse import OptionParser
 import subprocess
 import time
 
-ENV = "KDE"  # Can be 'KDE' or 'GNOME'
-DEVICEADDR = "AA:BB:CC:DD:EE:FF" # bluetooth device address
+ENV = "GNOME"  # Can be 'KDE' or 'GNOME'
 CHECKINTERVAL = 60  # device pinged at this interval (seconds) when screen is unlocked
 CHECKREPEAT = 2  # device must be unreachable this many times to lock
 mode = 'unlocked'
@@ -31,15 +30,18 @@ if __name__ == "__main__":
             if ENV == "KDE":
                 subprocess.Popen(['loginctl', 'unlock-session', '1'], shell=False, stdout=subprocess.PIPE)
             elif ENV == "GNOME":
-                subprocess.Popen(['gnome-screensaver-command', '--deactivate'], shell=False, stdout=subprocess.PIPE)
+                #subprocess.Popen(['gnome-screensaver-command', '--deactivate'], shell=False, stdout=subprocess.PIPE)
+                # Manually disabled screen locking - placing this to avoid errors
+                subprocess.Popen(['xdg-screensaver', 'activate'], shell=False, stdout=subprocess.PIPE)
 
         if process.returncode == 1 and mode == 'unlocked':
             mode = 'locked'
             if ENV == "KDE":
                 subprocess.Popen(['loginctl', 'lock-session', '1'], shell=False, stdout=subprocess.PIPE)
             elif ENV == "GNOME":
-                subprocess.Popen(['gnome-screensaver-command', '--lock'], shell=False, stdout=subprocess.PIPE)
-            
+                #subprocess.Popen(['gnome-screensaver-command', '--lock'], shell=False, stdout=subprocess.PIPE)
+                subprocess.Popen(['xdg-screensaver', 'lock'], shell=False, stdout=subprocess.PIPE)
+
         if mode == 'locked':
             time.sleep(1)
         else:
